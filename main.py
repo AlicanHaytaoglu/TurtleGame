@@ -1,5 +1,6 @@
 import turtle
 import random
+
 #Turtle List
 turtle_list=[]
 #Screen
@@ -8,7 +9,9 @@ drawing_board.bgcolor("green")
 drawing_board.title("Turtle Game ")
 FONT=('Arial',30,'normal')
 score=0
+game_over=False
 score_turtle=turtle.Turtle()
+countdown_Turtle=turtle.Turtle()
 def Setup_Score_Turtle():
     #score Turtle
 
@@ -28,10 +31,6 @@ def makeTurtle(x,y):
         score += 1
         score_turtle.clear()
         score_turtle.write(arg=f"Score :  {score}", move=False, align='Center', font=FONT)
-
-
-
-
 
     t.onclick(handle_click)
     t.penup()
@@ -53,13 +52,46 @@ def setup_turtles():
 def turtle_hide():
     for t in turtle_list:
         t.hideturtle()
-def show_turtle_random():
-    random.choice(turtle_list).showturtle()#random turtle listen birini seç ve göster
+#recursiye func
 
-turtle.tracer(0)#animasyonları iptal ettik
-Setup_Score_Turtle()
-setup_turtles()
-turtle_hide()
-turtle.tracer(1)#animasyonları aktif ettik
-show_turtle_random()
+def show_turtle_random():
+    if not game_over:
+        turtle_hide()
+        random.choice(turtle_list).showturtle()#random turtle listen birini seç ve göster
+        drawing_board.ontimer(show_turtle_random, 500)
+def countdown(time):
+    global game_over
+    countdown_Turtle.hideturtle()  # imleci gizledi
+    countdown_Turtle.color("black")
+    countdown_Turtle.penup()
+    top_height = drawing_board.window_height() / 2  # ekranın yarasından ölçecez çünkü yarısında başlatıyor
+    y = top_height * 0.8  # burada y  açılan ekranın aşağıdan yukarıya doğru yüzde 80 ninde dursun diyoruz
+    countdown_Turtle.setposition(0, y-40)  # burada yazının kordinat veriyoruz
+    countdown_Turtle.clear()
+    if time >0:
+        countdown_Turtle.clear()
+        countdown_Turtle.write(arg=f"Time: {time}", move=False, align='Center', font=FONT)
+        drawing_board.ontimer(lambda :countdown(time-1),1000)#lambda fonksiyon demek
+        turtle_hide()
+    else:
+        game_over =True
+        countdown_Turtle.clear()
+        turtle_hide()
+        countdown_Turtle.write(arg="Game Over", move=False, align='Center', font=FONT)
+
+
+
+
+
+def Start_Game():
+
+    turtle.tracer(0)#animasyonları iptal ettik
+
+    Setup_Score_Turtle()
+    setup_turtles()
+    turtle_hide()
+    turtle.tracer(1)#animasyonları aktif ettik
+    show_turtle_random()
+    countdown(10)
+Start_Game()
 turtle.mainloop()
